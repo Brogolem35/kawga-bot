@@ -1,0 +1,17 @@
+{
+  "name": "kawga-bot",
+  "version": "1.0.0",
+  "description": "Matchmaking bot for MBTK",
+  "main": "src/index.js",
+  "type":"module",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "author": "Brogolem35",
+  "license": "CC BY-SA 4.0",
+  "dependencies": {
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20"
+  }
+}
