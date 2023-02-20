@@ -8,7 +8,7 @@
     "start": "nodemon"
   },
   "author": "Brogolem35",
-  "license": "CC BY-SA 4.0",
+  "license": "GNU General Public License v3.0",
   "dependencies": {
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
