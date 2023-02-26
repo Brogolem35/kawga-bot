@@ -92,6 +92,6 @@ function updateJoin(host)
 		return;
 
 	host.joined = true;
-	const newEmbed = new EmbedBuilder(message.embeds[0]).setDescription("Someone joined!");
+	const newEmbed = new EmbedBuilder(message.embeds[0]).setDescription("Birisi katıldı!");
 	message.edit({embeds : [ newEmbed ]});
 }

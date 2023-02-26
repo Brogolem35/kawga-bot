@@ -40,7 +40,7 @@ function hostCommand(sender, ip, note, hostMessage)
 		.setColor(0x0099FF)
 		.setAuthor(
 		    {name : sender.tag, iconURL : sender.displayAvatarURL(), url : hostMessage.url})
-		.setTitle(`IP: ${ip}` + (note !== "" ? `\nNote: ${note}` : ""));
+		.setTitle(`IP: ${ip}` + (note !== "" ? `\nNot: ${note}` : ""));
 
 	hostingChannel.send({embeds : [ embed ], allowedMentions : {"users" : []}})
 	    .then((ret) => {
