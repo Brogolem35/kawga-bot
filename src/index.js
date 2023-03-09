@@ -6,6 +6,7 @@ import {messageCreateListener} from "./listeners/messageCreate.js";
 dotenv.config();
 
 const HOST_LIFESPAN = 3600000; // How long the hosting message will be displayed in millis
+const HOST_UPDATE_PERIOD = 100;
 
 const client = new Client({
 	intents : [
@@ -26,21 +27,20 @@ export const hostingChannel = await client.channels.fetch(process.env.HOST_CHANN
 export const hostMap = new Map();
 export const joinEmoji = client.emojis.cache.get(process.env.JOIN_EMOJI_ID);
 
-while (true) {
-	for (const [hostID, host] of hostMap.entries()) {
+setInterval(() => {updateHosts(hostMap, joinEmoji)}, HOST_UPDATE_PERIOD);
 
+function updateHosts(hostMap, joinEmoji)
+{
+	for (const [hostID, host] of hostMap.entries()) {
 		// deletes messages when they stay longer than HOST_LIFESPAN
 		if ((Date.now() - host.message.createdTimestamp) >= HOST_LIFESPAN) {
 			hostMap.delete(hostID);
 			host.message.delete().catch(console.error);
 		}
 
-		removeUnwantedReactions(hostID, host.message);
-		updateJoin(host);
+		removeUnwantedReactions(hostID, host.message, joinEmoji);
+		updateJoin(host, joinEmoji);
 	}
-
-	// sleep(1000) at home
-	await new Promise(r => setTimeout(r, 1000));
 }
 
 // Prints out the IDs of the channels it couldn't fetch.
@@ -58,7 +58,7 @@ function fetchSourceChannels()
 	return sourceChannels;
 }
 
-function removeUnwantedReactions(hostID, message)
+function removeUnwantedReactions(hostID, message, joinEmoji)
 {
 	const unwantedReactions =
 	    message.reactions.cache.filter((react) => react.emoji.id !== joinEmoji.id);
@@ -80,7 +80,7 @@ function removeUnwantedReactions(hostID, message)
 		    (err) => console.error(`Failed to remove reactions: ${err}`));
 }
 
-function updateJoin(host)
+function updateJoin(host, joinEmoji)
 {
 	if (host.joined)
 		return;
