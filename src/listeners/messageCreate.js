@@ -1,7 +1,6 @@
 import {EmbedBuilder} from "discord.js";
 
 import {Host} from "../Host.js"
-import {hostingChannel, hostMap, joinEmoji, sourceChannels} from "../index.js"
 
 const IP_PORT_REGEX =
     /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:\d+$/; // Regex for IPv4 with port. Taken from
@@ -21,7 +20,7 @@ class Command
 	}
 }
 
-export const messageCreateListener = (message) => {
+export const messageCreateListener = (message, hostingChannel, hostMap, joinEmoji, sourceChannels) => {
 	const hostID = message.author.id;
 	const channel = message.channel;
 
@@ -34,15 +33,15 @@ export const messageCreateListener = (message) => {
 		return;
 
 	if (command.type === "!unhost") {
-		unhostCommand(hostID);
+		unhostCommand(hostID, hostMap);
 		return;
 	}
 
 	if (command.type === "!host" && command.ip !== null)
-		hostCommand(command);
+		hostCommand(command, hostingChannel, hostMap, joinEmoji);
 };
 
-function hostCommand(command)
+function hostCommand(command, hostingChannel, hostMap, joinEmoji)
 {
 	const {ip, note, sourceMsg : msg} = command;
 	const sender = msg.author;
@@ -66,7 +65,7 @@ function hostCommand(command)
 	    .catch(console.error);
 }
 
-function unhostCommand(hostID)
+function unhostCommand(hostID, hostMap)
 {
 	const host = hostMap.get(hostID);
 	hostMap.delete(hostID);
