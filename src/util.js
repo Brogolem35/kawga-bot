@@ -16,6 +16,19 @@ export function updateHosts(client, hostMap, joinEmoji)
 	}
 }
 
+export function fetchChannels(client, sourceChannelIDs)
+{
+	const sourceChannels = [];
+
+	for (const id of sourceChannelIDs) {
+		client.channels.fetch(id)
+		    .then((channel) => { sourceChannels.push(channel); })
+		    .catch(() => { console.error(`Couldn't fetch the channel: ${id}`); });
+	}
+
+	return sourceChannels;
+}
+
 function removeUnwantedReactions(client, hostID, message, joinEmoji)
 {
 	const unwantedReactions =
