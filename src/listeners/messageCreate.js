@@ -68,6 +68,10 @@ function hostCommand(command, hostingChannel, hostMap, joinEmoji)
 function unhostCommand(hostID, hostMap)
 {
 	const host = hostMap.get(hostID);
+	
+	if(host === undefined)
+		return;
+
 	hostMap.delete(hostID);
 	host.message.delete().catch(console.error);
 }
