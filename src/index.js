@@ -18,13 +18,13 @@ const client = new Client({
 });
 
 client.on("ready", (c) => console.log(`${c.user.tag} is ready.`));
-client.on("messageCreate", messageCreateListener);
-
 await client.login(process.env.BOT_TOKEN);
 
 export const sourceChannels = fetchChannels(client, process.env.SOURCE_CHANNEL_IDS.split(","));
 export const hostingChannel = await client.channels.fetch(process.env.HOST_CHANNEL_ID);
 export const hostMap = new Map();
 export const joinEmoji = client.emojis.cache.get(process.env.JOIN_EMOJI_ID);
+
+client.on("messageCreate", messageCreateListener);
 
 setInterval(() => {updateHosts(client, hostMap, joinEmoji)}, HOST_UPDATE_PERIOD);

@@ -10,36 +10,47 @@ const IP_PORT_REGEX =
 const HOST_IP_PORT_REGEX =
     /^!host +((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:\d+ */; // !host + IP_PORT_REGEX
 
+class Command
+{
+	constructor(_type, _ip, _note, _sourceMsg)
+	{
+		this.type = _type;
+		this.ip = _ip;
+		this.note = _note;
+		this.sourceMsg = _sourceMsg;
+	}
+}
+
 export const messageCreateListener = (message) => {
-	const content = message.content.trim();
-	const sender = message.author;
-	const hostID = sender.id;
+	const hostID = message.author.id;
 	const channel = message.channel;
 
 	if (!sourceChannels.includes(channel))
 		return;
 
-	const {command, ip, note} = parseMessage(content);
+	const command = parseMessage(message);
 
 	if (command === null)
 		return;
 
-	if (command === "!unhost") {
+	if (command.type === "!unhost") {
 		unhostCommand(hostID);
 		return;
 	}
 
-	if (command === "!host" && ip !== null)
-		hostCommand(sender, ip, note, message);
+	if (command.type === "!host" && command.ip !== null)
+		hostCommand(command);
 };
 
-function hostCommand(sender, ip, note, hostMessage)
+function hostCommand(command)
 {
+	const {ip, note, sourceMsg : msg} = command;
+	const sender = msg.author;
+
 	const embed =
 	    new EmbedBuilder()
 		.setColor(0x0099FF)
-		.setAuthor(
-		    {name : sender.tag, iconURL : sender.displayAvatarURL(), url : hostMessage.url})
+		.setAuthor({name : sender.tag, iconURL : sender.displayAvatarURL(), url : msg.url})
 		.setTitle(`IP: ${ip}` + (note !== "" ? `\nNote: ${note}` : ""));
 
 	hostingChannel.send({embeds : [ embed ], allowedMentions : {"users" : []}})
@@ -62,24 +73,26 @@ function unhostCommand(hostID)
 	host.message.delete().catch(console.error);
 }
 
-function parseMessage(messageContent)
+function parseMessage(message)
 {
-	if (messageContent.charAt(0) !== "!")
-		return {command : null, ip : null, note : null};
+	const content = message.content;
 
-	const parts = messageContent.split(/ +/);
+	if (content.charAt(0) !== "!")
+		return null;
+
+	const parts = content.split(/ +/);
 	const command = parts[0];
 	const ip = parts[1];
 
 	if (parts.length < 2) {
 		if (command === "!unhost")
-			return {command, ip : null, note : null};
+			return new Command(command, null, null, message);
 	}
 
 	if (command !== "!host" || ip.match(IP_PORT_REGEX) === null)
-		return {command : null, ip : null, note : null};
+		return null;
 
-	const noteFull = messageContent.replace(HOST_IP_PORT_REGEX, '').split(/\n+/)[0];
+	const noteFull = content.replace(HOST_IP_PORT_REGEX, '').split(/\n+/)[0];
 	const note = noteFull.length > 103 ? noteFull.substring(0, 100) + "..." : noteFull;
-	return {command, ip, note};
+	return new Command(command, ip, note, message);
 }
