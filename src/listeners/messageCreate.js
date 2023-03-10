@@ -1,46 +1,60 @@
 import {EmbedBuilder} from "discord.js";
 
 import {Host} from "../Host.js"
-import {hostingChannel, hostMap, joinEmoji, sourceChannels} from "../index.js"
 
 const IP_PORT_REGEX =
-    /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:\d+$/; // Regex for IPv4 with port. Taken from
-						       // https://stackoverflow.com/a/36760050 and
-						       // modified.
+    /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:((6553[0-5])|(655[0-2]\d)|(65[0-4]\d{2})|(6[0-4]\d{3})|([1-5]\d{4})|(\d{1,4}))$/; // Regex for IPv4 with port. Taken from
+																  // https://stackoverflow.com/a/36760050 and
+																  // modified.
 const HOST_IP_PORT_REGEX =
-    /^!host +((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:\d+ */; // !host + IP_PORT_REGEX
+    /^!host +((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:((6553[0-5])|(655[0-2]\d)|(65[0-4]\d{2})|(6[0-4]\d{3})|([1-5]\d{4})|(\d{1,4})) */; // !host + IP_PORT_REGEX
 
-export const messageCreateListener = (message) => {
-	const content = message.content.trim();
-	const sender = message.author;
-	const hostID = sender.id;
-	const channel = message.channel;
-
-	if (!sourceChannels.includes(channel))
-		return;
-
-	const {command, ip, note} = parseMessage(content);
-
-	if (command === null)
-		return;
-
-	if (command === "!unhost") {
-		unhostCommand(hostID);
-		return;
+class Command
+{	
+	constructor(_type, _ip, _note, _sourceMsg)
+	{
+		this.type = _type;
+		this.ip = _ip;
+		this.note = _note;
+		this.sourceMsg = _sourceMsg;
 	}
+}
 
-	if (command === "!host" && ip !== null)
-		hostCommand(sender, ip, note, message);
-};
+export const messageCreateListener =
+    (message, hostingChannel, hostMap, joinEmoji, sourceChannels) => {
+	    const hostID = message.author.id;
+	    const channel = message.channel;
 
-function hostCommand(sender, ip, note, hostMessage)
+	    if (!sourceChannels.includes(channel))
+		    return;
+
+	    const command = parseMessage(message);
+
+	    if (command === null)
+		    return;
+
+	    if (command.type === "!unhost") {
+		    unhostCommand(hostID, hostMap);
+		    return;
+	    }
+
+	    if (command.type === "!host" && command.ip !== null)
+		    hostCommand(command, hostingChannel, hostMap, joinEmoji);
+    };
+
+function hostCommand(command, hostingChannel, hostMap, joinEmoji)
 {
+	const {ip, note, sourceMsg : msg} = command;
+	const sender = msg.author;
+
 	const embed =
 	    new EmbedBuilder()
 		.setColor(0x0099FF)
+
 		.setAuthor(
-		    {name : sender.tag, iconURL : sender.displayAvatarURL(), url : hostMessage.url})
+		    {name : sender.tag, iconURL : sender.displayAvatarURL(), url : msg.url})
 		.setTitle(`IP: ${ip}` + (note !== "" ? `\nNot: ${note}` : ""));
+
 
 	hostingChannel.send({embeds : [ embed ], allowedMentions : {"users" : []}})
 	    .then((ret) => {
@@ -55,31 +69,37 @@ function hostCommand(sender, ip, note, hostMessage)
 	    .catch(console.error);
 }
 
-function unhostCommand(hostID)
+function unhostCommand(hostID, hostMap)
 {
 	const host = hostMap.get(hostID);
+
+	if (host === undefined)
+		return;
+
 	hostMap.delete(hostID);
 	host.message.delete().catch(console.error);
 }
 
-function parseMessage(messageContent)
+function parseMessage(message)
 {
-	if (messageContent.charAt(0) !== "!")
-		return {command : null, ip : null, note : null};
+	const content = message.content;
 
-	const parts = messageContent.split(/ +/);
+	if (content.charAt(0) !== "!")
+		return null;
+
+	const parts = content.split(/ +/);
 	const command = parts[0];
 	const ip = parts[1];
 
 	if (parts.length < 2) {
 		if (command === "!unhost")
-			return {command, ip : null, note : null};
+			return new Command(command, null, null, message);
 	}
 
 	if (command !== "!host" || ip.match(IP_PORT_REGEX) === null)
-		return {command : null, ip : null, note : null};
+		return null;
 
-	const noteFull = messageContent.replace(HOST_IP_PORT_REGEX, '').split(/\n+/)[0];
+	const noteFull = content.replace(HOST_IP_PORT_REGEX, '').split(/\n+/)[0];
 	const note = noteFull.length > 103 ? noteFull.substring(0, 100) + "..." : noteFull;
-	return {command, ip, note};
+	return new Command(command, ip, note, message);
 }

@@ -1,6 +1,6 @@
 {
   "name": "kawga-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Matchmaking bot for MBTK",
   "main": "src/index.js",
   "type":"module",
