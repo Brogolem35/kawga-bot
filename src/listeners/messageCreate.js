@@ -3,14 +3,14 @@ import {EmbedBuilder} from "discord.js";
 import {Host} from "../Host.js"
 
 const IP_PORT_REGEX =
-    /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:\d+$/; // Regex for IPv4 with port. Taken from
-						       // https://stackoverflow.com/a/36760050 and
-						       // modified.
+    /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:((6553[0-5])|(655[0-2]\d)|(65[0-4]\d{2})|(6[0-4]\d{3})|([1-5]\d{4})|(\d{1,4}))$/; // Regex for IPv4 with port. Taken from
+																  // https://stackoverflow.com/a/36760050 and
+																  // modified.
 const HOST_IP_PORT_REGEX =
-    /^!host +((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:\d+ */; // !host + IP_PORT_REGEX
+    /^!host +((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:((6553[0-5])|(655[0-2]\d)|(65[0-4]\d{2})|(6[0-4]\d{3})|([1-5]\d{4})|(\d{1,4})) */; // !host + IP_PORT_REGEX
 
 class Command
-{
+{	
 	constructor(_type, _ip, _note, _sourceMsg)
 	{
 		this.type = _type;
@@ -20,26 +20,27 @@ class Command
 	}
 }
 
-export const messageCreateListener = (message, hostingChannel, hostMap, joinEmoji, sourceChannels) => {
-	const hostID = message.author.id;
-	const channel = message.channel;
+export const messageCreateListener =
+    (message, hostingChannel, hostMap, joinEmoji, sourceChannels) => {
+	    const hostID = message.author.id;
+	    const channel = message.channel;
 
-	if (!sourceChannels.includes(channel))
-		return;
+	    if (!sourceChannels.includes(channel))
+		    return;
 
-	const command = parseMessage(message);
+	    const command = parseMessage(message);
 
-	if (command === null)
-		return;
+	    if (command === null)
+		    return;
 
-	if (command.type === "!unhost") {
-		unhostCommand(hostID, hostMap);
-		return;
-	}
+	    if (command.type === "!unhost") {
+		    unhostCommand(hostID, hostMap);
+		    return;
+	    }
 
-	if (command.type === "!host" && command.ip !== null)
-		hostCommand(command, hostingChannel, hostMap, joinEmoji);
-};
+	    if (command.type === "!host" && command.ip !== null)
+		    hostCommand(command, hostingChannel, hostMap, joinEmoji);
+    };
 
 function hostCommand(command, hostingChannel, hostMap, joinEmoji)
 {
@@ -68,8 +69,8 @@ function hostCommand(command, hostingChannel, hostMap, joinEmoji)
 function unhostCommand(hostID, hostMap)
 {
 	const host = hostMap.get(hostID);
-	
-	if(host === undefined)
+
+	if (host === undefined)
 		return;
 
 	hostMap.delete(hostID);
