@@ -1,4 +1,4 @@
-import {EmbedBuilder} from "discord.js";
+import {Channel, EmbedBuilder, Emoji, Message, Snowflake, TextChannel} from "discord.js";
 
 import {Host} from "../Host.js"
 
@@ -10,8 +10,13 @@ const HOST_IP_PORT_REGEX =
     /^!host +((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:((6553[0-5])|(655[0-2]\d)|(65[0-4]\d{2})|(6[0-4]\d{3})|([1-5]\d{4})|(\d{1,4})) */; // !host + IP_PORT_REGEX
 
 class Command
-{	
-	constructor(_type, _ip, _note, _sourceMsg)
+{
+	type: String;
+	ip: String | null;
+	note: String | null;
+	sourceMsg: Message;
+
+	constructor(_type: String, _ip: String | null, _note: String | null, _sourceMsg: Message)
 	{
 		this.type = _type;
 		this.ip = _ip;
@@ -21,7 +26,7 @@ class Command
 }
 
 export const messageCreateListener =
-    (message, hostingChannel, hostMap, joinEmoji, sourceChannels) => {
+    (message: Message, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>, joinEmoji: Emoji, sourceChannels: Channel[]) => {
 	    const hostID = message.author.id;
 	    const channel = message.channel;
 
@@ -42,7 +47,7 @@ export const messageCreateListener =
 		    hostCommand(command, hostingChannel, hostMap, joinEmoji);
     };
 
-function hostCommand(command, hostingChannel, hostMap, joinEmoji)
+function hostCommand(command: Command, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>, joinEmoji: Emoji)
 {
 	const {ip, note, sourceMsg : msg} = command;
 	const sender = msg.author;
@@ -58,15 +63,15 @@ function hostCommand(command, hostingChannel, hostMap, joinEmoji)
 		    const prevHost = hostMap.get(sender.id);
 
 		    if (prevHost !== undefined)
-			    prevHost.message.delete(sender.id).catch(console.error);
+			    prevHost.message.delete().catch(console.error);
 
 		    hostMap.set(sender.id, new Host(sender.id, ret));
-		    ret.react(joinEmoji).catch(console.error);
+		    ret.react(joinEmoji.identifier).catch(console.error);
 	    })
 	    .catch(console.error);
 }
 
-function unhostCommand(hostID, hostMap)
+function unhostCommand(hostID: Snowflake, hostMap: Map<Snowflake, Host>)
 {
 	const host = hostMap.get(hostID);
 
@@ -77,7 +82,7 @@ function unhostCommand(hostID, hostMap)
 	host.message.delete().catch(console.error);
 }
 
-function parseMessage(message)
+function parseMessage(message: Message)
 {
 	const content = message.content;
 
