@@ -10,7 +10,7 @@ export function updateHosts(client, hostMap, joinEmoji)
 			hostMap.delete(hostID);
 			host.message.delete().catch(console.error);
 		}
-
+		
 		removeUnwantedReactions(client, hostID, host.message, joinEmoji);
 		updateJoin(host, joinEmoji);
 	}
@@ -19,25 +19,41 @@ export function updateHosts(client, hostMap, joinEmoji)
 export function fetchChannels(client, sourceChannelIDs)
 {
 	const sourceChannels = [];
-
+	
 	for (const id of sourceChannelIDs) {
 		client.channels.fetch(id)
-		    .then((channel) => { sourceChannels.push(channel); })
-		    .catch(() => { console.error(`Couldn't fetch the channel: ${id}`); });
+		.then((channel) => { sourceChannels.push(channel); })
+		.catch(() => { console.error(`Couldn't fetch the channel: ${id}`); });
 	}
 
 	return sourceChannels;
 }
 
+export function validateEnv(): {res: Boolean, err: String|null}
+{
+	const env = process.env;
+
+	if (env.SOURCE_CHANNEL_IDS === undefined)
+		return {res : false, err : "SOURCE_CHANNEL_IDS"};
+
+	if (env.HOST_CHANNEL_ID === undefined)
+		return {res : false, err : "HOST_CHANNEL_ID"};
+
+	if (env.JOIN_EMOJI_ID === undefined)
+		return {res : false, err : "JOIN_EMOJI_ID"};
+
+	return {res: true, err: null};
+}
+
 function removeUnwantedReactions(client, hostID, message, joinEmoji)
 {
 	const unwantedReactions =
-	    message.reactions.cache.filter((react) => react.emoji.id !== joinEmoji.id);
-
+	message.reactions.cache.filter((react) => react.emoji.id !== joinEmoji.id);
+	
 	for (const reaction of unwantedReactions.values())
-		reaction.remove().catch((err) =>
-					    console.error(`Failed to remove reactions: ${err}`));
-
+	reaction.remove().catch((err) =>
+	console.error(`Failed to remove reactions: ${err}`));
+	
 	const joinReaction = message.reactions.cache.get(joinEmoji.id);
 
 	if (joinReaction === undefined)
