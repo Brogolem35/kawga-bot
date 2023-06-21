@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon dist/src/index.js",
+    "build": "tsc -p tsconfig.json"
   },
   "author": "Brogolem35",
   "license": "GNU General Public License v3.0",
