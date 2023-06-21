@@ -1,4 +1,4 @@
-import {Client, IntentsBitField} from "discord.js";
+import {Client, IntentsBitField, TextChannel} from "discord.js";
 import * as dotenv from "dotenv"
 
 import {messageCreateListener} from "./listeners/messageCreate.js";
@@ -33,6 +33,6 @@ const hostMap = new Map();
 const joinEmoji = client.emojis.cache.get(env.JOIN_EMOJI_ID!);
 
 client.on("messageCreate",
-	  (msg) => messageCreateListener(msg, hostingChannel, hostMap, joinEmoji, sourceChannels));
+	  (msg) => messageCreateListener(msg, (hostingChannel as TextChannel), hostMap, joinEmoji!, sourceChannels));
 
-setInterval(() => {updateHosts(client, hostMap, joinEmoji)}, HOST_UPDATE_PERIOD);
+setInterval(() => {updateHosts(client, hostMap, joinEmoji!)}, HOST_UPDATE_PERIOD);
