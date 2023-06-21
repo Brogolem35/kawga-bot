@@ -12,11 +12,11 @@ const HOST_IP_PORT_REGEX =
 class Command
 {
 	type: String;
-	ip: String | null;
-	note: String | null;
+	ip: String|null;
+	note: String|null;
 	sourceMsg: Message;
 
-	constructor(_type: String, _ip: String | null, _note: String | null, _sourceMsg: Message)
+	constructor(_type: String, _ip: String|null, _note: String|null, _sourceMsg: Message)
 	{
 		this.type = _type;
 		this.ip = _ip;
@@ -26,7 +26,8 @@ class Command
 }
 
 export const messageCreateListener =
-    (message: Message, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>, joinEmoji: Emoji, sourceChannels: Channel[]) => {
+    (message: Message, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>, joinEmoji: Emoji,
+     sourceChannels: Channel[]) => {
 	    const hostID = message.author.id;
 	    const channel = message.channel;
 
@@ -47,7 +48,8 @@ export const messageCreateListener =
 		    hostCommand(command, hostingChannel, hostMap, joinEmoji);
     };
 
-function hostCommand(command: Command, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>, joinEmoji: Emoji)
+function hostCommand(command: Command, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>,
+		     joinEmoji: Emoji)
 {
 	const {ip, note, sourceMsg : msg} = command;
 	const sender = msg.author;

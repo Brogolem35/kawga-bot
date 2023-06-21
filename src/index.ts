@@ -21,7 +21,7 @@ const client = new Client({
 client.on("ready", (c) => console.log(`${c.user.tag} is ready.`));
 await client.login(process.env.BOT_TOKEN);
 
-const {res: envValid, err: envMissing} = validateEnv();
+const {res : envValid, err : envMissing} = validateEnv();
 if (!envValid) {
 	console.error(envMissing + " undefined");
 	process.exit();
@@ -32,7 +32,7 @@ const hostingChannel = await client.channels.fetch(env.HOST_CHANNEL_ID!);
 const hostMap = new Map();
 const joinEmoji = client.emojis.cache.get(env.JOIN_EMOJI_ID!);
 
-client.on("messageCreate",
-	  (msg) => messageCreateListener(msg, (hostingChannel as TextChannel), hostMap, joinEmoji!, sourceChannels));
+client.on("messageCreate", (msg) => messageCreateListener(msg, (hostingChannel as TextChannel),
+							  hostMap, joinEmoji!, sourceChannels));
 
 setInterval(() => {updateHosts(client, hostMap, joinEmoji!)}, HOST_UPDATE_PERIOD);
