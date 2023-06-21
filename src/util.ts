@@ -7,8 +7,7 @@ import {APIEmbed,
 	User} from "discord.js";
 
 import {Host} from "./Host";
-
-const HOST_LIFESPAN = 3600000; // How long the hosting message will be displayed in millis
+import { HOST_LIFESPAN } from "./config";
 
 export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoji: Emoji)
 {
