@@ -3,7 +3,6 @@ import {APIEmbed,
 	EmbedBuilder,
 	Emoji,
 	Message,
-	Snowflake,
 	TextChannel,
 	User} from "discord.js";
 
@@ -11,7 +10,7 @@ import {Host} from "./Host";
 
 const HOST_LIFESPAN = 3600000; // How long the hosting message will be displayed in millis
 
-export function updateHosts(client: Client, hostMap: Map<Snowflake, Host>, joinEmoji: Emoji)
+export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoji: Emoji)
 {
 	for (const [hostID, host] of hostMap.entries()) {
 		// deletes messages when they stay longer than HOST_LIFESPAN
@@ -25,7 +24,7 @@ export function updateHosts(client: Client, hostMap: Map<Snowflake, Host>, joinE
 	}
 }
 
-export function fetchChannels(client: Client, sourceChannelIDs: Snowflake[]): TextChannel[]
+export function fetchChannels(client: Client, sourceChannelIDs: string[]): TextChannel[]
 {
 	const sourceChannels: TextChannel[] = [];
 
@@ -38,7 +37,7 @@ export function fetchChannels(client: Client, sourceChannelIDs: Snowflake[]): Te
 	return sourceChannels;
 }
 
-export function validateEnv(): {res: Boolean, err: String|null}
+export function validateEnv(): {res: Boolean, err: string|null}
 {
 	const env = process.env;
 
@@ -54,7 +53,7 @@ export function validateEnv(): {res: Boolean, err: String|null}
 	return {res : true, err : null};
 }
 
-function removeUnwantedReactions(client: Client, hostID: Snowflake, message: Message,
+function removeUnwantedReactions(client: Client, hostID: string, message: Message,
 				 joinEmoji: Emoji)
 {
 	const unwantedReactions =
@@ -64,7 +63,7 @@ function removeUnwantedReactions(client: Client, hostID: Snowflake, message: Mes
 		reaction.remove().catch((err) =>
 					    console.error(`Failed to remove reactions: ${err}`));
 
-	const joinReaction = message.reactions.cache.get(joinEmoji.identifier);
+	const joinReaction = message.reactions.cache.get(joinEmoji.id!);
 
 	if (joinReaction === undefined)
 		return;
@@ -83,7 +82,7 @@ function updateJoin(host: Host, joinEmoji: Emoji)
 		return;
 
 	const message = host.message;
-	const joinReaction = message.reactions.cache.get(joinEmoji.identifier);
+	const joinReaction = message.reactions.cache.get(joinEmoji.id!);
 
 	if (joinReaction === undefined || joinReaction.users.cache.get(host.id) === undefined)
 		return;

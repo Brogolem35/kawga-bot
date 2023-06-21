@@ -1,4 +1,4 @@
-import {Channel, EmbedBuilder, Emoji, Message, Snowflake, TextChannel} from "discord.js";
+import {Channel, EmbedBuilder, Emoji, Message, TextChannel} from "discord.js";
 
 import {Host} from "../Host.js"
 
@@ -26,7 +26,7 @@ class Command
 }
 
 export const messageCreateListener =
-    (message: Message, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>, joinEmoji: Emoji,
+    (message: Message, hostingChannel: TextChannel, hostMap: Map<string, Host>, joinEmoji: Emoji,
      sourceChannels: Channel[]) => {
 	    const hostID = message.author.id;
 	    const channel = message.channel;
@@ -48,7 +48,7 @@ export const messageCreateListener =
 		    hostCommand(command, hostingChannel, hostMap, joinEmoji);
     };
 
-function hostCommand(command: Command, hostingChannel: TextChannel, hostMap: Map<Snowflake, Host>,
+function hostCommand(command: Command, hostingChannel: TextChannel, hostMap: Map<string, Host>,
 		     joinEmoji: Emoji)
 {
 	const {ip, note, sourceMsg : msg} = command;
@@ -73,7 +73,7 @@ function hostCommand(command: Command, hostingChannel: TextChannel, hostMap: Map
 	    .catch(console.error);
 }
 
-function unhostCommand(hostID: Snowflake, hostMap: Map<Snowflake, Host>)
+function unhostCommand(hostID: string, hostMap: Map<string, Host>)
 {
 	const host = hostMap.get(hostID);
 

@@ -1,8 +1,8 @@
-import {Message, Snowflake} from "discord.js";
+import {Message} from "discord.js";
 
 export class Host
 {
-	id: Snowflake;
+	id: string;
 	message: Message;
 	joined: Boolean;
 
