@@ -1,9 +1,9 @@
 import {Client, IntentsBitField, TextChannel} from "discord.js";
 import * as dotenv from "dotenv"
 
+import {HOST_UPDATE_PERIOD} from "./config.js";
 import {messageCreateListener} from "./listeners/messageCreate.js";
 import {fetchChannels, updateHosts, validateEnv} from "./util.js";
-import { HOST_UPDATE_PERIOD } from "./config.js";
 
 dotenv.config();
 const env = process.env;

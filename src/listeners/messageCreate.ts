@@ -57,7 +57,8 @@ function hostCommand(command: Command, hostingChannel: TextChannel, hostMap: Map
 	const embed =
 	    new EmbedBuilder()
 		.setColor(0x0099FF)
-		.setAuthor({name : sender.username, iconURL : sender.displayAvatarURL(), url : msg.url})
+		.setAuthor(
+		    {name : sender.username, iconURL : sender.displayAvatarURL(), url : msg.url})
 		.setTitle(`IP: ${ip}` + (note !== "" ? `\nNote: ${note}` : ""));
 
 	hostingChannel.send({embeds : [ embed ], allowedMentions : {"users" : []}})

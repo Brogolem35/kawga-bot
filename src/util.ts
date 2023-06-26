@@ -1,13 +1,7 @@
-import {APIEmbed,
-	Client,
-	EmbedBuilder,
-	Emoji,
-	Message,
-	TextChannel,
-	User} from "discord.js";
+import {APIEmbed, Client, EmbedBuilder, Emoji, Message, TextChannel, User} from "discord.js";
 
+import {HOST_LIFESPAN} from "./config";
 import {Host} from "./Host";
-import { HOST_LIFESPAN } from "./config";
 
 export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoji: Emoji)
 {
@@ -52,8 +46,7 @@ export function validateEnv(): {res: Boolean, err: string|null}
 	return {res : true, err : null};
 }
 
-function removeUnwantedReactions(client: Client, hostID: string, message: Message,
-				 joinEmoji: Emoji)
+function removeUnwantedReactions(client: Client, hostID: string, message: Message, joinEmoji: Emoji)
 {
 	const unwantedReactions =
 	    message.reactions.cache.filter((react) => react.emoji.id !== joinEmoji.id);
