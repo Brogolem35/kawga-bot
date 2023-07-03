@@ -1,6 +1,6 @@
 import {APIEmbed, Client, EmbedBuilder, Emoji, Message, TextChannel, User} from "discord.js";
 
-import {HOST_LIFESPAN, REMOVE_UNWANTED_REACTIONS, UPDATE_JOIN} from "./config";
+import {HOST_LIFESPAN, REMOVE_UNWANTED_REACTIONS, UPDATE_JOIN} from "./config.js";
 import {Host} from "./Host";
 
 export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoji: Emoji)
