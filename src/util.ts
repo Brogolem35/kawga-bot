@@ -1,6 +1,6 @@
 import {APIEmbed, Client, EmbedBuilder, Emoji, Message, TextChannel, User} from "discord.js";
 
-import {HOST_LIFESPAN, REMOVE_UNWANTED_REACTIONS, UPDATE_JOIN} from "./config.js";
+import {HOST_LIFESPAN, REMOVE_UNWANTED_REACTIONS} from "./config.js";
 import {Host} from "./Host";
 
 export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoji: Emoji)
@@ -15,8 +15,7 @@ export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoj
 		if (REMOVE_UNWANTED_REACTIONS)
 			removeUnwantedReactions(client, hostID, host.message, joinEmoji);
 
-		if (UPDATE_JOIN)
-			updateJoin(host, joinEmoji);
+		updateJoin(host, joinEmoji);
 	}
 }
 
