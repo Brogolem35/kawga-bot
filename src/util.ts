@@ -10,6 +10,7 @@ export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoj
 		if ((Date.now() - host.message.createdTimestamp) >= HOST_LIFESPAN) {
 			hostMap.delete(hostID);
 			host.message.delete().catch(console.error);
+			continue;
 		}
 
 		if (REMOVE_UNWANTED_REACTIONS)
