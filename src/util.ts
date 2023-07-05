@@ -1,11 +1,21 @@
 import {APIEmbed, Client, EmbedBuilder, Emoji, Message, TextChannel, User} from "discord.js";
 
-import {HOST_LIFESPAN, REMOVE_UNWANTED_REACTIONS} from "./config.js";
+import {HOST_LIFESPAN, JOIN_LIFESPAN, REMOVE_UNWANTED_REACTIONS} from "./config.js";
 import {Host} from "./Host";
 
 export function updateHosts(client: Client, hostMap: Map<string, Host>, joinEmoji: Emoji)
 {
 	for (const [hostID, host] of hostMap.entries()) {
+		// deletes "joined" messages when they stay longer than JOIN_LIFESPAN
+		if (JOIN_LIFESPAN > 0) {
+			if (host.joined && host.joinDate !== null &&
+			    (Date.now() - host.joinDate) >= JOIN_LIFESPAN) {
+				hostMap.delete(hostID);
+				host.message.delete().catch(console.error);
+				continue;
+			}
+		}
+
 		// deletes messages when they stay longer than HOST_LIFESPAN
 		if ((Date.now() - host.message.createdTimestamp) >= HOST_LIFESPAN) {
 			hostMap.delete(hostID);
@@ -82,7 +92,7 @@ function updateJoin(host: Host, joinEmoji: Emoji)
 	if (joinReaction === undefined || joinReaction.users.cache.get(host.id) === undefined)
 		return;
 
-	host.joined = true;
+	host.join();
 	const newEmbed =
 	    new EmbedBuilder(message.embeds[0] as APIEmbed).setDescription("Someone joined!");
 	message.edit({embeds : [ newEmbed ]});
