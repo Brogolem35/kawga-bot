@@ -4,7 +4,7 @@ export class Host
 {
 	id: string;
 	message: Message;
-	joined: Boolean;
+	joined: boolean;
 	joinDate: number|null; // The date that the "joined" is set to true, in Unix time
 
 	public constructor(_id: string, _message: Message<boolean>)
